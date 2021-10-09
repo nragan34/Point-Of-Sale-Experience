@@ -46,25 +46,15 @@ public class KioskApp {
   public void app() {
     System.out.println(welcome);
     System.out.println(lineSeparator);
-
-
-
     try {
-
-
       // sqlite3 path
       String jdbcURL = "jdbc:sqlite:/C:\\sqlite3\\databases\\chinook.db";
       // create database connection
       Connection connection = DriverManager.getConnection(jdbcURL);
 
-
-
-
       // query everything from tracks
       ResultSet result = getAllTracks(connection);
       loopResultSet(result);
-
-
 
       // select track by id to add to playlist
       Boolean addAnotherTrack = true;
@@ -77,13 +67,10 @@ public class KioskApp {
         break;
       }
 
-
-
     } catch (SQLException e) {
       System.out.println("Error");
       e.printStackTrace();
     }
-
 
   }
 
@@ -136,25 +123,21 @@ public class KioskApp {
 
   // tracks table
   public ResultSet getSingleTrack(Connection connection) {
-
-
     try {
-
       // select track id to add to playlist
       String userInput = SelectAndAddTracks("Select a track by ID to add to your playlist: ");
       // Select track by id
       Integer userInputInt = Integer.parseInt(userInput);
       // Query Statement
-      System.out.println(userInputInt);
-      PreparedStatement selectTrackId = connection.prepareStatement("SELECT * FROM tracks WHERE TrackId = ?");
+      System.out.println("Printing user input = " + userInputInt);
+      PreparedStatement sql = connection.prepareStatement("SELECT * FROM tracks where trackid = ?");
       // Set track id
-      selectTrackId.setInt(1,userInputInt);
+      sql.setInt(1,userInputInt);
       // get result of query
-      ResultSet results = selectTrackId.executeQuery();
-      System.out.println(selectTrackId.executeQuery().getFetchSize());
-
+      ResultSet result = sql.executeQuery();
+      System.out.println("Size of results = " + result.getFetchSize());
       // return result set
-      return results;
+      return result;
     } catch (SQLException e) {
       System.out.println("Error selecting all from tracks... ");
     }
