@@ -62,7 +62,6 @@ public class KioskApp {
       while (addAnotherTrack) {
         // method to add track
         ResultSet singleTrack = getSingleTrack(connection);
-
         loopResultSet(singleTrack);
         break;
       }
@@ -84,7 +83,6 @@ public class KioskApp {
 // loop through tracks table results
   public void loopResultSet(ResultSet result) {
     try {
-      result.next();
       while (result.next()) {
         String trackid = result.getString("trackid");
         String name = result.getString("name");
@@ -98,7 +96,7 @@ public class KioskApp {
 
         String concatString = trackid + " " + name + " " + albumId + " " + mediaTypeId + " " + genreId + " " + composer + " " + milliseconds + " " + bytes + " " +  unitPrice;
 
-        System.out.println(concatString);
+        System.out.println("\n" + concatString);
       }
     } catch (SQLException e) {
       System.out.println("Error looping through result set.... ");
@@ -125,17 +123,16 @@ public class KioskApp {
   public ResultSet getSingleTrack(Connection connection) {
     try {
       // select track id to add to playlist
-      String userInput = SelectAndAddTracks("Select a track by ID to add to your playlist: ");
+      System.out.println(lineSeparator);
+      String userInput = SelectAndAddTracks("\nSelect a track by ID to add to your playlist: ");
       // Select track by id
       Integer userInputInt = Integer.parseInt(userInput);
       // Query Statement
-      System.out.println("Printing user input = " + userInputInt);
       PreparedStatement sql = connection.prepareStatement("SELECT * FROM tracks where trackid = ?");
       // Set track id
       sql.setInt(1,userInputInt);
       // get result of query
       ResultSet result = sql.executeQuery();
-      System.out.println("Size of results = " + result.getFetchSize());
       // return result set
       return result;
     } catch (SQLException e) {
