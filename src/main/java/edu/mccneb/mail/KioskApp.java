@@ -58,6 +58,8 @@ public class KioskApp {
       Connection connection = DriverManager.getConnection(jdbcURL);
 
 
+
+
       // query everything from tracks
       ResultSet result = getAllTracks(connection);
       loopResultSet(result);
@@ -133,7 +135,7 @@ public class KioskApp {
 
 
   // tracks table
-  public ResultSet getSingleTrack(Connection myconnection) {
+  public ResultSet getSingleTrack(Connection connection) {
 
 
     try {
@@ -144,13 +146,12 @@ public class KioskApp {
       Integer userInputInt = Integer.parseInt(userInput);
       // Query Statement
       System.out.println(userInputInt);
-      String test = "SELECT * FROM tracks WHERE TrackId is 3500";
-      Statement selectTrackId = myconnection.createStatement();
+      PreparedStatement selectTrackId = connection.prepareStatement("SELECT * FROM tracks WHERE TrackId = ?");
       // Set track id
-      //selectTrackId.setInt(1,userInputInt);
+      selectTrackId.setInt(1,userInputInt);
       // get result of query
-      ResultSet results = selectTrackId.executeQuery(test);
-      System.out.println(results.getFetchSize());
+      ResultSet results = selectTrackId.executeQuery();
+      System.out.println(selectTrackId.executeQuery().getFetchSize());
 
       // return result set
       return results;
