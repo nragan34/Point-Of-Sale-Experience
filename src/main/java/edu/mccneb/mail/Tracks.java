@@ -1,5 +1,12 @@
 package edu.mccneb.mail;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tracks {
 
   private int trackId;
@@ -100,5 +107,69 @@ public class Tracks {
 
   public void setUnitPrice(double unitPrice) {
     this.unitPrice = unitPrice;
+  }
+
+
+  // return all results from tracks table
+  public ResultSet getAllTracks(Connection connection) {
+    try {
+      // query everything from the tracks table
+      PreparedStatement sql = connection.prepareStatement("SELECT * FROM tracks");
+      ResultSet result = sql.executeQuery();
+      return result;
+    } catch (SQLException e) {
+      System.out.println("Error selecting all from tracks... ");
+    }
+    return null;
+  }
+
+
+  // return a single track from tracks table
+  public ResultSet getSingleTrack(Connection connection, String lineSeparator, String userInput) {
+    try {
+      // Select track by id
+      Integer userInputInt = Integer.parseInt(userInput);
+      // Query Statement
+      PreparedStatement sql = connection.prepareStatement("SELECT * FROM tracks where trackid = ?");
+      // Set track id
+      sql.setInt(1,userInputInt);
+      // get result of query
+      ResultSet result = sql.executeQuery();
+      // return result set
+      return result;
+    } catch (SQLException e) {
+      System.out.println("Error selecting all from tracks... ");
+    }
+    return null;
+  }
+
+
+  // loop through tracks table results and print
+  public List<String> trackTableResultSet(ResultSet result) {
+
+    List<String> trackTableResults = new ArrayList<>();
+
+    try {
+      while (result.next()) {
+        String trackid = result.getString("trackid");
+        String name = result.getString("name");
+        String albumId = result.getString("Albumid");
+        String mediaTypeId = result.getString("mediatypeid");
+        String genreId = result.getString("genreid");
+        String composer= result.getString("composer");
+        String milliseconds = result.getString("milliseconds");
+        String bytes = result.getString("bytes");
+        String unitPrice = result.getString("unitprice");
+
+        String concatString = trackid + " " + name + " " + albumId + " " + mediaTypeId + " " + genreId + " " + composer + " " + milliseconds + " " + bytes + " " +  unitPrice;
+
+        trackTableResults.add(concatString);
+      }
+    } catch (SQLException e) {
+      System.out.println("Error looping through result set.... ");
+      e.printStackTrace();
+      return null;
+    }
+    return trackTableResults;
   }
 }
