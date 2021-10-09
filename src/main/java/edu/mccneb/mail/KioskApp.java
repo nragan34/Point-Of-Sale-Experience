@@ -51,25 +51,34 @@ public class KioskApp {
 
   // Main app logic
   public void app() {
+
+
     System.out.println(welcome);
     System.out.println(lineSeparator);
-    try {
-      // sqlite3 path
-      String jdbcURL = "jdbc:sqlite:/C:\\sqlite3\\databases\\chinook.db";
-      // create database connection
-      Connection connection = DriverManager.getConnection(jdbcURL);
-      // query everything from tracks
-      ResultSet result = tracks.getAllTracks(connection);
-      // add results to a list
-      List<String> allTracks = tracks.trackTableResultSet(result);
-      // iterate list and print items
-      iterateArrayList(allTracks);
 
-      // select a single track by id to add to playlist
+
+    try {
+      /////////////////////////////////////
+      //// Connect To Database
+      String jdbcURL = "jdbc:sqlite:/C:\\sqlite3\\databases\\chinook.db";
+      Connection connection = DriverManager.getConnection(jdbcURL);
+
+      /////////////////////////////////////
+      //// Query All Tracks and Iterate/Print results
+      ResultSet result = tracks.getAllTracks(connection);
+      if (result != null) {
+        List<String> allTracks = tracks.trackTableResultSet(result);
+        iterateArrayList(allTracks);
+      } else {
+        System.out.println("Error! No results were returned from the tracks database table... ");
+      }
+
+
+      /////////////////////////////////////
+      //// Query Single Track and Add To Playlist
       Boolean addAnotherTrack = true;
       List<String> addTrackList = new ArrayList<>();
       while (addAnotherTrack) {
-        // method to add track    ANSI_YELLOW
         // select track id to add to playlist
         System.out.println("\n" + lineSeparator);
         // request input from user
@@ -83,7 +92,7 @@ public class KioskApp {
       }
 
     } catch (SQLException e) {
-      System.out.println("Error");
+      System.out.println("Error SQL exception while getting single track... ");
       e.printStackTrace();
     }
 
@@ -95,5 +104,6 @@ public class KioskApp {
         .stream()
         .forEach(System.out::println);
   }
+
 
 }
