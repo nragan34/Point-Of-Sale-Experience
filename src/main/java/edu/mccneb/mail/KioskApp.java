@@ -96,6 +96,7 @@ public class KioskApp {
       e.printStackTrace();
     }
 
+    // need to fix commit
   }
 
   // iterate List<String> array
