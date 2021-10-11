@@ -1,5 +1,8 @@
 package edu.mccneb.mail;
 
+import static edu.mccneb.mail.KioskApp.RESET;
+import static edu.mccneb.mail.KioskApp.WHITE_BOLD;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -135,10 +138,12 @@ public class Tracks {
       sql.setInt(1,userInputInt);
       // get result of query
       ResultSet result = sql.executeQuery();
-      // return result set
       return result;
     } catch (SQLException e) {
       System.out.println("Error selecting all from tracks... ");
+    } catch (NumberFormatException e) {
+      System.out.println("Error! Your entry must be an integer!");
+      return null;
     }
     return null;
   }
@@ -161,9 +166,10 @@ public class Tracks {
         String bytes = result.getString("bytes");
         String unitPrice = result.getString("unitprice");
 
-        String concatString = trackid + " " + name + " " + albumId + " " + mediaTypeId + " " + genreId + " " + composer + " " + milliseconds + " " + bytes + " " +  unitPrice;
+        String concatString = WHITE_BOLD + "Track ID:" + RESET + " " + trackid + WHITE_BOLD + "\nName: " + RESET + name + WHITE_BOLD +  "\nComposer: " + RESET + composer + WHITE_BOLD +  "\nPrice: " + RESET +  unitPrice;
+        System.out.println("\n\n");
 
-        trackTableResults.add(concatString);
+        trackTableResults.add(result);
       }
     } catch (SQLException e) {
       System.out.println("Error looping through result set.... ");
