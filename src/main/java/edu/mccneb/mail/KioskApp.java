@@ -26,7 +26,6 @@ public class KioskApp {
   public static final String WHITE_BOLD = "\033[1;37m";
   public static final String WHITE_UNDERLINE = "\033[4;37m";
   public static final String GREEN_UNDERLINE = "\033[4;32m";
-  public static final String YELLOW_BOLD = "\033[1;33m";
   public static final String RED = "\033[0;31m";
   // Reset
   public static final String RESET = "\033[0m";  // Text Reset
@@ -50,8 +49,6 @@ public class KioskApp {
       // run app
       run.app();
 
-      // terminate application
-      System.out.println("\nGoodbye!");
     } catch (Exception e) {
       // catch exception
       e.printStackTrace();
@@ -84,8 +81,6 @@ public class KioskApp {
       /////////////////////////////////////
       //// Query single track and add to playlist
       Boolean addAnotherTrack = true;
-      // User Playlist
-      List<Track> playList = new ArrayList<>();
       while (addAnotherTrack) {
 
         // request input from user
@@ -94,14 +89,10 @@ public class KioskApp {
         System.out.println(" ");
 
         // query table for single track
-        ResultSet singleTrack = getSingleTrack(connection, lineSeparator, userInput);
+        ResultSet singleTrack = getSingleTrack(connection, userInput);
 
         // For each item in trackList
         if (singleTrack != null) {
-
-          // format result into string
-          System.out.println(
-              WHITE_UNDERLINE + "We are adding the following track to your playlist:" + RESET);
 
           // add track to playlist
           addTrackToPlaylist(singleTrack);
@@ -114,9 +105,10 @@ public class KioskApp {
           System.out.println(" ");
         }
       }
-
-
+      // Create and print invoice
       createInvoice();
+
+      // Print playlist
       viewPlaylist();
 
     } catch (SQLException e) {
@@ -124,6 +116,8 @@ public class KioskApp {
       e.printStackTrace();
     }
   }
+
+
 
 
   // prompt user to add more tracks
@@ -141,7 +135,6 @@ public class KioskApp {
         return false;
       } else {
         System.out.println(RED + "Error! Please select either (y/n).\n" + RESET);
-        continue;
       }
     }
   }
@@ -153,8 +146,7 @@ public class KioskApp {
     try {
       // query everything from the tracks table
       PreparedStatement sql = connection.prepareStatement("SELECT * FROM tracks");
-      ResultSet result = sql.executeQuery();
-      return result;
+      return sql.executeQuery();
     } catch (SQLException e) {
       System.out.println("Error selecting all from tracks... ");
     }
@@ -163,10 +155,10 @@ public class KioskApp {
 
 
   // return a single track from tracks table
-  public ResultSet getSingleTrack(Connection connection, String lineSeparator, String userInput) {
+  public ResultSet getSingleTrack(Connection connection, String userInput) {
     try {
       // Select track by id
-      Integer userInputInt = Integer.parseInt(userInput);
+      int userInputInt = Integer.parseInt(userInput);
       // Query Statement
       PreparedStatement sql = connection.prepareStatement("SELECT * FROM tracks where trackid = ?");
       // Set track id
@@ -221,15 +213,20 @@ public class KioskApp {
         if (!checkDuplicateTracks(trackid)) {
           Track newTrack = new Track(trackid, name, composer, unitPrice);
 
+          // format result into string
+          System.out.println(
+              WHITE_UNDERLINE + "\nWe are adding the following track to your playlist:" + RESET);
+
+          // format string
           System.out.println(WHITE_BOLD + "Track ID:" + RESET + " " + trackid + WHITE_BOLD + "\nName: " + RESET
               + name + WHITE_BOLD + "\nComposer: " + RESET + composer + WHITE_BOLD + "\nPrice: "
               + RESET + unitPrice);
 
-          System.out.println(" ");
+          System.out.println("\n");
 
           playList.add(newTrack);
         } else {
-          System.out.println("\nYou already have that track in your playlist! \n");
+          System.out.println(RED + "You already have that track in your playlist! \n" + RESET);
         }
 
       }
@@ -254,7 +251,7 @@ public class KioskApp {
     for (Track tracks : playList) {
       totalPrice += tracks.getUnitPrice();
     }
-    System.out.println(WHITE_UNDERLINE + "- - - - - - - - - - - - - - - - - -" + RESET);
+    System.out.println("\n\n" + WHITE_UNDERLINE + "- - - - - - - - - - - - - - - - - -" + RESET);
     totalPrice = Math.round(totalPrice * 100) / 100.0 ;
     System.out.println(GREEN_BOLD + "\nThe total cost for your playlist is " + RESET + "$" + totalPrice);
   }
@@ -263,8 +260,15 @@ public class KioskApp {
   public void viewPlaylist() {
     System.out.println(WHITE_BOLD + "\nYour Playlist:" + RESET);
     for(Track track : playList) {
-      System.out.println(track.getTrackId() + " " + track.getName() + " " + track.getUnitPrice());
+
+
+      // format string
+      System.out.println("\n" + WHITE_BOLD + "Track ID:" + RESET + " " + track.getTrackId() + WHITE_BOLD + "\nName: " + RESET
+          + track.getName()  + WHITE_BOLD + "\nPrice: " + RESET + track.getUnitPrice());
+
     }
+    // terminate application
+    System.out.println("\nThanks creating a playlist with the " + GREEN_UNDERLINE + "KioskApp!" + RESET);
     System.out.println("\n" + WHITE_UNDERLINE + "- - - - - - - - - - - - - - - - - -" + RESET);
   }
 
